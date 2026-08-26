@@ -215,9 +215,25 @@
         </div>
     </div>
 
-    <script type="module">
-        import { auth } from './auth.js';
-        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    <!-- Firebase SDK from CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+    
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtEe61VFzO6yymnRDIY6VUZaJv7Z2UrJE",
+            authDomain: "dozo-dinho-academy.firebaseapp.com",
+            projectId: "dozo-dinho-academy",
+            storageBucket: "dozo-dinho-academy.firebasestorage.app",
+            messagingSenderId: "643133250547",
+            appId: "1:643133250547:web:242e6b96c48b4b49e15086",
+            measurementId: "G-TYXP65ZJG9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
         const loginForm = document.getElementById('loginForm');
         const emailInput = document.getElementById('email');
@@ -226,7 +242,7 @@
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
 
-        loginForm.addEventListener('submit', async (e) => {
+        loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
             const email = emailInput.value;
@@ -238,22 +254,21 @@
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<span class="loading"></span> Logging in...';
 
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                
-                successMessage.textContent = 'Login successful! Redirecting...';
-                successMessage.classList.add('show');
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    successMessage.textContent = '✅ Login successful! Redirecting...';
+                    successMessage.classList.add('show');
 
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
-
-            } catch (error) {
-                errorMessage.textContent = error.message;
-                errorMessage.classList.add('show');
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Login';
-            }
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                })
+                .catch((error) => {
+                    errorMessage.textContent = error.message;
+                    errorMessage.classList.add('show');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                });
         });
     </script>
 </body>
