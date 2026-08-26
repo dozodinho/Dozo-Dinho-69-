@@ -64,19 +64,17 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
-            font-family: Arial, sans-serif;
         }
 
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .signup-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 5px;
@@ -84,10 +82,6 @@
             font-weight: 600;
             cursor: pointer;
             margin-top: 10px;
-        }
-
-        .signup-btn:active {
-            opacity: 0.9;
         }
 
         .signup-btn:disabled {
@@ -109,20 +103,14 @@
 
         .message.error {
             background: #fee;
-            border: 1px solid #fcc;
             color: #c33;
+            border: 1px solid #fcc;
         }
 
         .message.success {
             background: #efe;
-            border: 1px solid #cfc;
             color: #3c3;
-        }
-
-        .message.info {
-            background: #eef;
-            border: 1px solid #cce;
-            color: #33c;
+            border: 1px solid #cfc;
         }
 
         .signup-footer {
@@ -158,23 +146,23 @@
 
         <div id="message" class="message"></div>
 
-        <form id="signupForm">
+        <form id="signupForm" onsubmit="return handleSubmit(event)">
             <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" required>
+                <input type="email" id="email" name="email" required>
             </div>
 
             <div class="form-group">
                 <label for="password">Password (min 6 characters)</label>
-                <input type="password" id="password" required>
+                <input type="password" id="password" name="password" required>
             </div>
 
             <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" id="confirmPassword" required>
+                <label for="confirm">Confirm Password</label>
+                <input type="password" id="confirm" name="confirm" required>
             </div>
 
-            <button type="submit" class="signup-btn" id="signupBtn">Create Account</button>
+            <button type="submit" class="signup-btn" id="btn">Create Account</button>
         </form>
 
         <div class="signup-footer">
@@ -186,81 +174,61 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
 
     <script>
-        // Firebase Config
-        const firebaseConfig = {
+        const config = {
             apiKey: "AIzaSyCtEe61VFzO6yymnRDIY6VUZaJv7Z2UrJE",
             authDomain: "dozo-dinho-academy.firebaseapp.com",
             projectId: "dozo-dinho-academy",
             storageBucket: "dozo-dinho-academy.firebasestorage.app",
             messagingSenderId: "643133250547",
-            appId: "1:643133250547:web:242e6b96c48b4b49e15086",
-            measurementId: "G-TYXP65ZJG9"
+            appId: "1:643133250547:web:242e6b96c48b4b49e15086"
         };
 
-        // Initialize Firebase FIRST
-        firebase.initializeApp(firebaseConfig);
-        
-        // Then get auth reference
+        firebase.initializeApp(config);
         const auth = firebase.auth();
 
-        // Get DOM elements
-        const form = document.getElementById('signupForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
-        const signupBtn = document.getElementById('signupBtn');
-        const messageDiv = document.getElementById('message');
-
-        // Show message function
-        function showMessage(text, type) {
-            messageDiv.textContent = text;
-            messageDiv.className = 'message show ' + type;
-        }
-
-        // Handle form submission
-        form.addEventListener('submit', function(e) {
+        function handleSubmit(e) {
             e.preventDefault();
 
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm').value;
+            const msg = document.getElementById('message');
+            const btn = document.getElementById('btn');
 
-            // Validation
-            if (!email) {
-                showMessage('Please enter your email', 'error');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showMessage('Passwords do not match!', 'error');
-                return;
+            if (password !== confirm) {
+                msg.textContent = 'Passwords do not match!';
+                msg.className = 'message show error';
+                return false;
             }
 
             if (password.length < 6) {
-                showMessage('Password must be at least 6 characters!', 'error');
-                return;
+                msg.textContent = 'Password must be at least 6 characters!';
+                msg.className = 'message show error';
+                return false;
             }
 
-            // Disable button
-            signupBtn.disabled = true;
-            signupBtn.textContent = 'Creating account...';
-            showMessage('Creating your account...', 'info');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+            msg.textContent = '';
+            msg.className = 'message';
 
-            // Create user
             auth.createUserWithEmailAndPassword(email, password)
-                .then(function(userCredential) {
-                    showMessage('✅ Account created successfully! Redirecting...', 'success');
-                    
+                .then(function(result) {
+                    msg.textContent = 'Success! Redirecting to dashboard...';
+                    msg.className = 'message show success';
                     setTimeout(function() {
                         window.location.href = 'dashboard.html';
-                    }, 2000);
+                    }, 1500);
                 })
                 .catch(function(error) {
-                    showMessage('Error: ' + error.message, 'error');
-                    signupBtn.disabled = false;
-                    signupBtn.textContent = 'Create Account';
+                    msg.textContent = error.message;
+                    msg.className = 'message show error';
+                    btn.disabled = false;
+                    btn.textContent = 'Create Account';
                 });
-        });
+
+            return false;
+        }
     </script>
 </body>
 </html>
