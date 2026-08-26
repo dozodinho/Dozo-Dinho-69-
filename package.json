@@ -1,0 +1,27 @@
+{
+  "name": "dozo-dinho-academy",
+  "version": "1.0.0",
+  "description": "OGR Trading Academy - Firebase Authentication",
+  "type": "module",
+  "main": "auth.js",
+  "scripts": {
+    "start": "node --experimental-modules auth.js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "firebase",
+    "authentication",
+    "trading",
+    "academy"
+  ],
+  "author": "Dozo Dinho",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^9.22.0"
+  },
+  "devDependencies": {
+    "vite": "^4.0.0"
+  }
+}
